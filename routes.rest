@@ -1,0 +1,64 @@
+// LOCALHOST 
+### Get all tasks 
+GET http://localhost:8080/api/tasks
+
+### Get tasks by id 
+GET http://localhost:8080/api/tasks/67a7b57ff5718b60e38c4052
+
+### Create tasks 
+POST http://localhost:8080/api/tasks
+Content-Type: application/json
+
+{
+    "taskName": "Clean Kitchen",
+    "taskDate": "2.8.2025",
+    "completeTime": "1",
+    "priority": "10"
+}
+
+### PUT tasks 
+PUT http://localhost:8080/api/tasks/67a7b5e9f5718b60e38c4053
+Content-Type: application/json
+
+{
+    "taskName": "Laundry",
+    "taskDate": "2.10.2025",
+    "completeTime": "3",
+    "priority": "6"
+}
+
+### DELETE tasks 
+DELETE http://localhost:8080/api/tasks/67a7b608f5718b60e38c4054
+
+
+// PRODUCTION Deploy 
+
+### Get all tasks 
+GET https://task-manager-5431.onrender.com/api/tasks
+
+### Get tasks by id 
+GET https://task-manager-5431.onrender.com/api/tasks/622023f642f9ab4cd6e060b3
+
+### Create tasks 
+POST https://task-manager-5431.onrender.com/api/tasks
+Content-Type: application/json
+
+{
+    "taskName": "Clean Kitchen",
+    "taskDate": "2.8.2025",
+    "completeTime": "1",
+    "priority": "10"
+}
+
+### PUT tasks 
+PUT https://task-manager-5431.onrender.com/api/tasks/6220bcb39cd507e920c75a0b
+Content-Type: application/json
+
+{
+    "taskName": "Laundry",
+    "taskDate": "2.10.2025",
+    "completeTime": "3",
+    "priority": "6"
+}
+### DELETE tasks 
+DELETE https://task-manager-5431.onrender.com/api/tasks/6220e34083149913680f9a64

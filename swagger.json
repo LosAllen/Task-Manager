@@ -1,0 +1,99 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Task Manager API",
+        "version": "1.0.0",
+        "title": "Task Manager"
+    },
+    "host": "task-manager-5431.onrender.com",
+    "basePath": "/",
+    "schemes": ["https"],
+    "paths": {
+        "/api/tasks": {
+            "get": {
+                "tags": ["Tasks"],
+                "summary": "Get all tasks",
+                "operationId": "getTasks",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/Task" }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Tasks"],
+                "summary": "Create a new task",
+                "operationId": "createTask",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": { "$ref": "#/definitions/Task" }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Task created",
+                        "schema": { "$ref": "#/definitions/Task" }
+                    }
+                }
+            }
+        },
+        "/api/tasks/{id}": {
+            "get": {
+                "tags": ["Tasks"],
+                "summary": "Get task by ID",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "type": "string" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": { "$ref": "#/definitions/Task" }
+                    },
+                    "404": { "description": "Task not found" }
+                }
+            },
+            "put": {
+                "tags": ["Tasks"],
+                "summary": "Update a task",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "type": "string" },
+                    { "in": "body", "name": "body", "required": true, "schema": { "$ref": "#/definitions/Task" } }
+                ],
+                "responses": {
+                    "200": { "description": "Task updated" },
+                    "404": { "description": "Task not found" }
+                }
+            },
+            "delete": {
+                "tags": ["Tasks"],
+                "summary": "Delete a task",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "type": "string" }
+                ],
+                "responses": {
+                    "200": { "description": "Task deleted" },
+                    "404": { "description": "Task not found" }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Task": {
+            "type": "object",
+            "properties": {
+                "_id": { "type": "string", "example": "622023f642f9ab4cd6e060b3" },
+                "taskName": { "type": "string", "example": "Clean Kitchen" },
+                "taskDate": { "type": "string", "example": "2025-02-08" },
+                "completeTime": { "type": "string", "example": "1" },
+                "priority": { "type": "string", "example": "10" }
+            }
+        }
+    }
+}
