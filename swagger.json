@@ -1,99 +1,185 @@
 {
-    "swagger": "2.0",
+    "openapi": "3.0.0",
     "info": {
-        "description": "Task Manager API",
-        "version": "1.0.0",
-        "title": "Task Manager"
+      "title": "Task Manager API",
+      "version": "1.0.0",
+      "description": "API for managing tasks",
+      "contact": {
+        "name": "Your Name",
+        "email": "your@email.com"
+      }
     },
-    "host": "task-manager-5431.onrender.com",
-    "basePath": "/",
-    "schemes": ["https"],
+    "servers": [
+      {
+        "url": "http://localhost:8080/api",
+        "description": "Local Development Server"
+      },
+      {
+        "url": "https://task-manager-5431.onrender.com/api",
+        "description": "Production Server"
+      }
+    ],
     "paths": {
-        "/api/tasks": {
-            "get": {
-                "tags": ["Tasks"],
-                "summary": "Get all tasks",
-                "operationId": "getTasks",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "type": "array",
-                            "items": { "$ref": "#/definitions/Task" }
-                        }
+      "/tasks": {
+        "get": {
+          "summary": "Get all tasks",
+          "description": "Fetches all tasks from the database",
+          "responses": {
+            "200": {
+              "description": "A list of tasks",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Task"
                     }
+                  }
                 }
-            },
-            "post": {
-                "tags": ["Tasks"],
-                "summary": "Create a new task",
-                "operationId": "createTask",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "required": true,
-                        "schema": { "$ref": "#/definitions/Task" }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Task created",
-                        "schema": { "$ref": "#/definitions/Task" }
-                    }
-                }
+              }
             }
+          }
         },
-        "/api/tasks/{id}": {
-            "get": {
-                "tags": ["Tasks"],
-                "summary": "Get task by ID",
-                "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string" }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": { "$ref": "#/definitions/Task" }
-                    },
-                    "404": { "description": "Task not found" }
+        "post": {
+          "summary": "Create a new task",
+          "description": "Adds a new task to the database",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
                 }
-            },
-            "put": {
-                "tags": ["Tasks"],
-                "summary": "Update a task",
-                "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string" },
-                    { "in": "body", "name": "body", "required": true, "schema": { "$ref": "#/definitions/Task" } }
-                ],
-                "responses": {
-                    "200": { "description": "Task updated" },
-                    "404": { "description": "Task not found" }
-                }
-            },
-            "delete": {
-                "tags": ["Tasks"],
-                "summary": "Delete a task",
-                "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string" }
-                ],
-                "responses": {
-                    "200": { "description": "Task deleted" },
-                    "404": { "description": "Task not found" }
-                }
+              }
             }
+          },
+          "responses": {
+            "201": {
+              "description": "Task created successfully"
+            },
+            "400": {
+              "description": "Invalid input data"
+            }
+          }
         }
+      },
+      "/tasks/{id}": {
+        "get": {
+          "summary": "Get a task by ID",
+          "description": "Fetches a task by its ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The ID of the task"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Task details",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Task not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update a task by ID",
+          "description": "Modifies an existing task",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The ID of the task"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Task updated successfully"
+            },
+            "400": {
+              "description": "Invalid input data"
+            },
+            "404": {
+              "description": "Task not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a task by ID",
+          "description": "Removes a task from the database",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The ID of the task"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Task deleted successfully"
+            },
+            "404": {
+              "description": "Task not found"
+            }
+          }
+        }
+      }
     },
-    "definitions": {
+    "components": {
+      "schemas": {
         "Task": {
-            "type": "object",
-            "properties": {
-                "_id": { "type": "string", "example": "622023f642f9ab4cd6e060b3" },
-                "taskName": { "type": "string", "example": "Clean Kitchen" },
-                "taskDate": { "type": "string", "example": "2025-02-08" },
-                "completeTime": { "type": "string", "example": "1" },
-                "priority": { "type": "string", "example": "10" }
+          "type": "object",
+          "properties": {
+            "taskName": {
+              "type": "string",
+              "example": "Clean Kitchen"
+            },
+            "taskDate": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-02-08"
+            },
+            "completeTime": {
+              "type": "string",
+              "example": "1"
+            },
+            "priority": {
+              "type": "string",
+              "example": "10"
             }
+          }
         }
+      }
     }
-}
+  }
+  

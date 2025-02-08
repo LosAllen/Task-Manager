@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.use('/api-docs', require('./swagger')); // Register Swagger first
+router.use('/api-docs', require('./swagger')); // Register Swagger
 router.use('/tasks', require('./tasks'));   // Register task routes
 
 router.get('/', (req, res) => {
