@@ -10,6 +10,7 @@ const taskRoutes = require("./routes/tasks");
 const authRoutes = require("./routes/auth");
 const swaggerDocument = require("./swagger.json");
 const swaggerUi = require("swagger-ui-express");
+const jwt = require("jsonwebtoken");
 
 dotenv.config();
 
