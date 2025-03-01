@@ -20,6 +20,17 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 
+// Add session middleware
+app.use(session({
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Initialize Passport after session
+app.use(passport.initialize());
+app.use(passport.session());
+
 // MongoDB Connection
 mongoose.set('strictQuery', true);
 const mongoUri = process.env.MONGODB_URI;
