@@ -7,8 +7,9 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const taskRoutes = require("./routes/tasks");
-const swaggerUi = require("swagger-ui-express");
+const authRoutes = require("./routes/auth");
 const swaggerDocument = require("./swagger.json");
+const swaggerUi = require("swagger-ui-express");
 
 dotenv.config();
 
@@ -19,25 +20,24 @@ const port = process.env.PORT || 8080;
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
-app.use("/api/tasks", require("./routes/tasks"));
 
-// Add session middleware
+// Session setup for authentication
 app.use(session({
-    secret: process.env.SESSION_SECRET || "supersecret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
 
-// Initialize Passport after session
+// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// MongoDB Connection
+// Database Connection
 mongoose.set('strictQuery', true);
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI;// Ensure the MongoDB URI is loaded
 if (!mongoUri) {
     console.error("MONGODB_URI is missing or not loaded from .env file!");
-    process.exit(1);
+    process.exit(1); // Exit if MONGO_URI is not set
 }
 mongoose.connect(mongoUri, {
     useNewUrlParser: true,
@@ -62,34 +62,11 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
-// GitHub OAuth Login
-app.get("/auth/github", passport.authenticate("github", { scope: ["user:email"] }));
-
-app.get("/auth/github/callback",
-    passport.authenticate("github", { failureRedirect: "/" }),
-    (req, res) => {
-        // Redirect back to Swagger UI after login
-        const redirectUrl = process.env.NODE_ENV === "production"
-            ? `https://task-manager-5431.onrender.com/api/api-docs`
-            : `http://localhost:8080/api/api-docs`;
-
-        res.redirect(redirectUrl);
-    }
-);
-
-// Middleware to check if user is authenticated
-const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.status(401).json({ error: "Unauthorized - Please log in via GitHub" });
-};
-
-// Swagger Documentation
 app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Routes
-app.use("/api/tasks", isAuthenticated, taskRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/auth", authRoutes);
 
 // Root endpoint
 app.get("/", (req, res) => {
