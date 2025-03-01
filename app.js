@@ -34,10 +34,10 @@ app.use(passport.session());
 
 // Database Connection
 mongoose.set('strictQuery', true);
-const mongoUri = process.env.MONGODB_URI;// Ensure the MongoDB URI is loaded
+const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
     console.error("MONGODB_URI is missing or not loaded from .env file!");
-    process.exit(1); // Exit if MONGO_URI is not set
+    process.exit(1);
 }
 mongoose.connect(mongoUri, {
     useNewUrlParser: true,
@@ -62,6 +62,20 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
+// OAuth routes (requires login every visit)
+app.get("/auth/github", passport.authenticate("github", { scope: ["user:email"], session: false }));
+
+app.get("/auth/github/callback",
+    passport.authenticate("github", { failureRedirect: "/", session: false }),
+    (req, res) => {
+        const redirectUrl = process.env.NODE_ENV === "production"
+            ? "https://task-manager-5431.onrender.com/api/api-docs"
+            : "http://localhost:8080/api/api-docs";
+        res.redirect(redirectUrl);
+    }
+);
+
+// Swagger Documentation
 app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Routes

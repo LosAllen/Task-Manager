@@ -160,23 +160,13 @@
         "Task": {
           "type": "object",
           "properties": {
-            "taskName": {
-              "type": "string",
-              "example": "Clean Kitchen"
-            },
-            "taskDate": {
-              "type": "string",
-              "format": "date",
-              "example": "2025-02-08"
-            },
-            "completeTime": {
-              "type": "string",
-              "example": "1"
-            },
-            "priority": {
-              "type": "string",
-              "example": "10"
-            }
+            "taskId": { "type": "string" },
+            "taskName": { "type": "string" },
+            "taskDate": { "type": "string", "format": "date" },
+            "completeTime": { "type": "number" },
+            "priority": { "type": "string", "enum": ["Low", "Medium", "High"] },
+            "startTime": { "type": "string", "example": "08:30 AM" },
+            "endTime": { "type": "string", "example": "09:30 AM" }
           }
         }
       }
