@@ -162,7 +162,7 @@
         "properties": {
           "_id": {
             "type": "string",
-            "example": "ObjectId('67a7b57ff5718b60e38c4052')"
+            "example": "ObjectId('')"
           },
           "taskName": {
             "type": "string",
@@ -178,7 +178,7 @@
           },
           "priority": {
             "type": "string",
-            "example": "10"
+            "example": "Low"
           },
           "endTime": {
             "type": "string",
