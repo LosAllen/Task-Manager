@@ -4,10 +4,19 @@ const Task = require("../models/task");
 
 // Middleware to check authentication
 const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ error: "No token provided" });
     }
-    res.status(401).json({ error: "Unauthorized" });
+
+    const token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        req.user = decoded;
+        next();
+    });
 };
 
 // Get all tasks for the authenticated user

@@ -62,15 +62,18 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
-// OAuth routes (requires login every visit)
 app.get("/auth/github", passport.authenticate("github", { scope: ["user:email"], session: false }));
 
 app.get("/auth/github/callback",
     passport.authenticate("github", { failureRedirect: "/", session: false }),
     (req, res) => {
+        // ✅ Generate JWT token and send to client
+        const token = jwt.sign({ id: req.user.id, username: req.user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        // Redirect to API docs with token as query param
         const redirectUrl = process.env.NODE_ENV === "production"
-            ? "https://task-manager-5431.onrender.com/api/api-docs"
-            : "http://localhost:8080/api/api-docs";
+            ? `https://task-manager-5431.onrender.com/api/api-docs?token=${token}`
+            : `http://localhost:8080/api/api-docs?token=${token}`;
         res.redirect(redirectUrl);
     }
 );
