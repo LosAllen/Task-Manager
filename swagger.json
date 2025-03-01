@@ -160,14 +160,17 @@
       "Task": {
         "type": "object",
         "properties": {
+          "_id": {
+            "type": "string",
+            "example": "ObjectId('67a7b57ff5718b60e38c4052')"
+          },
           "taskName": {
             "type": "string",
             "example": "Clean Kitchen"
           },
           "taskDate": {
             "type": "string",
-            "format": "date",
-            "example": "2025-02-08"
+            "example": "2.8.2025"
           },
           "completeTime": {
             "type": "string",
@@ -176,6 +179,14 @@
           "priority": {
             "type": "string",
             "example": "10"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "9:00"
+          },
+          "startTime": {
+            "type": "string",
+            "example": "8:30"
           }
         }
       }
