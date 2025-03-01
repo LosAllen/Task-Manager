@@ -1,23 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const Task = require("../models/task");
-const jwt = require("jsonwebtoken");
 
 // Middleware to check authentication
 const isAuthenticated = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ error: "No token provided" });
+    if (req.isAuthenticated()) {
+        return next();
     }
-
-    const token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ error: "Unauthorized" });
-        }
-        req.user = decoded;
-        next();
-    });
+    res.status(401).json({ error: "Unauthorized - Please log in via GitHub" });
 };
 
 // Get all tasks for the authenticated user

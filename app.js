@@ -7,10 +7,8 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const taskRoutes = require("./routes/tasks");
-const authRoutes = require("./routes/auth");
-const swaggerDocument = require("./swagger.json");
 const swaggerUi = require("swagger-ui-express");
-const jwt = require("jsonwebtoken");
+const swaggerDocument = require("./swagger.json");
 
 dotenv.config();
 
@@ -22,18 +20,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 
-// Session setup for authentication
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-}));
-
-// Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Database Connection
+// MongoDB Connection
 mongoose.set('strictQuery', true);
 const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
@@ -63,28 +50,34 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
-app.get("/auth/github", passport.authenticate("github", { scope: ["user:email"], session: false }));
+// GitHub OAuth Login
+app.get("/auth/github", passport.authenticate("github", { scope: ["user:email"] }));
 
 app.get("/auth/github/callback",
-    passport.authenticate("github", { failureRedirect: "/", session: false }),
+    passport.authenticate("github", { failureRedirect: "/" }),
     (req, res) => {
-        // ✅ Generate JWT token and send to client
-        const token = jwt.sign({ id: req.user.id, username: req.user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-        // Redirect to API docs with token as query param
+        // Redirect back to Swagger UI after login
         const redirectUrl = process.env.NODE_ENV === "production"
-            ? `https://task-manager-5431.onrender.com/api/api-docs?token=${token}`
-            : `http://localhost:8080/api/api-docs?token=${token}`;
+            ? `https://task-manager-5431.onrender.com/api/api-docs`
+            : `http://localhost:8080/api/api-docs`;
+
         res.redirect(redirectUrl);
     }
 );
+
+// Middleware to check if user is authenticated
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.status(401).json({ error: "Unauthorized - Please log in via GitHub" });
+};
 
 // Swagger Documentation
 app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Routes
-app.use("/api/tasks", taskRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/tasks", isAuthenticated, taskRoutes);
 
 // Root endpoint
 app.get("/", (req, res) => {
